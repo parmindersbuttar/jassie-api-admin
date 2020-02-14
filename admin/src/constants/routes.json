@@ -1,4 +1,6 @@
 {
     "LOGIN": "/",
-    "DASHBOARD": "/dashboard"
+    "DASHBOARD": "/dashboard",
+    "MEMBERS": "/members",
+    "CATEGORY": "/category"
 }

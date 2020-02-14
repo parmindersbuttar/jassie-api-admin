@@ -6,7 +6,7 @@ module.exports = (req, res, next) => {
 
   if (req.header('Authorization')) {
     const parts = req.header('Authorization').split(' ');
-
+    // console.log(req.header('Authorization'))
     if (parts.length === 2) {
       const scheme = parts[0];
       const credentials = parts[1];

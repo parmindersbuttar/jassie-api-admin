@@ -21,8 +21,9 @@ import {
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import PeopleIcon from '@material-ui/icons/People';
-import BarChartIcon from '@material-ui/icons/BarChart';
+import AppsIcon from '@material-ui/icons/Apps';
 import MenuIcon from '@material-ui/icons/Menu';
+import { Link } from 'react-router-dom';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import Copyright from '../components/common/Copyright';
 
@@ -147,17 +148,23 @@ export default function DefaultLayout({children}) {
         </div>
         <Divider />
         <List>
-          <ListItem button>
+          <ListItem button component={Link} to="/dashboard">
             <ListItemIcon>
               <DashboardIcon />
             </ListItemIcon>
               <ListItemText primary="Dashboard" />
           </ListItem>
-          <ListItem button>
+          <ListItem button component={Link} to="/members">
             <ListItemIcon>
               <PeopleIcon />
             </ListItemIcon>
-            <ListItemText primary="Customers" />
+            <ListItemText primary="Members" />
+          </ListItem>
+          <ListItem button component={Link} to="/category">
+            <ListItemIcon>
+              <AppsIcon />
+            </ListItemIcon>
+            <ListItemText primary="Category" />
           </ListItem>
         </List>
       </Drawer>
