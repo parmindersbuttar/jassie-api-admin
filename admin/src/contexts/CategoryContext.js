@@ -1,6 +1,6 @@
 import React, { useReducer, createContext } from "react";
 // import routes from '../constants/routes.json';
-// import ApiService from '../utils/ApiService';
+import ApiService from '../utils/ApiService';
 // import history from '../utils/history';
 import {
   GET_CTG,
@@ -50,37 +50,55 @@ const reducer = (state, action) => {
 // Define your custom hook that contains your state, dispatcher and actions
 const useCtg = ({children}) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const getCtg = async (data) => {
+  const getCategory = async (data) => {
     try {
+      ApiService.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('userToken')}`;
+      const resp = await ApiService.get('/private/category');
         dispatch({
           type: GET_CTG_SUCCESS,
-          payload: [{
-                'id':1,
-                'name':'Development',
-                'HOD':'abc'
-            },{
-                'id':2,
-                'name':'Designing',
-                'HOD':'abc'
-            },
-            {
-                'id':1,
-                'name':'Marketting',
-                'HOD':'abc'
-            }]
+          payload: resp.data.category
         });
       
     } catch (err) {
-      console.log('get users error :', err);
+      console.log('get category error :', err);
     }
   };
+
+  const addCategory = async (data) => {
+    try {
+      ApiService.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('userToken')}`;
+      const resp = await ApiService.post('/public/category', {...data});
+      getCategory()
+    } catch (err) {
+      console.log('add category error :', err);
+    }
+  };
+  const updateCategory = async (data,id) => {
+    try {
+      ApiService.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('userToken')}`;
+      const resp = await ApiService.put(`/private/category/${id}`, {...data});
+      getCategory()
+    } catch (err) {
+      console.log('add category error :', err);
+    }
+  };
+  const deleteCategory = async(id) => {
+    try{
+      ApiService.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('userToken')}`;
+      const resp = await ApiService.delete(`/private/category/${id}`);
+      console.log(resp)
+      getCategory()
+    }catch(err){
+      console.log("delete category error :: ",err)
+    }
+  }
   const validateToken = () => {
     dispatch( {
       type: 'VALIDATE'
     })
   }
   return (
-      <CategoryContext.Provider value={{...state, getCtg, validateToken}}>
+      <CategoryContext.Provider value={{...state, getCategory, addCategory, updateCategory, deleteCategory, validateToken}}>
           {children}
       </CategoryContext.Provider>
   )

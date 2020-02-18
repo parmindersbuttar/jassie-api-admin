@@ -10,6 +10,7 @@ const publicRoutes = {
   },
   'POST /login': 'UserController.login',
   'POST /validate': 'UserController.validate',
+  'POST /category': 'CtgController.register',
 };
 
 module.exports = publicRoutes;
