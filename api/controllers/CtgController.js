@@ -3,7 +3,7 @@ const Category = require('../models/Category');
 const authService = require('../services/auth.service');
 const bcryptService = require('../services/bcrypt.service');
 
-const CtgController = () => {
+const CategoryController = () => {
     const register = async (req, res) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -71,5 +71,5 @@ const CtgController = () => {
     };
   };
   
-  module.exports = CtgController;
+  module.exports = CategoryController;
   

@@ -25,6 +25,8 @@ import AppsIcon from '@material-ui/icons/Apps';
 import MenuIcon from '@material-ui/icons/Menu';
 import { Link } from 'react-router-dom';
 import DashboardIcon from '@material-ui/icons/Dashboard';
+import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
+
 import Copyright from '../components/common/Copyright';
 
 const drawerWidth = 240;
@@ -165,6 +167,12 @@ export default function DefaultLayout({children}) {
               <AppsIcon />
             </ListItemIcon>
             <ListItemText primary="Category" />
+          </ListItem>
+          <ListItem button component={Link} to="/video">
+            <ListItemIcon>
+              <PlayCircleFilledIcon />
+            </ListItemIcon>
+            <ListItemText primary="Video" />
           </ListItem>
         </List>
       </Drawer>

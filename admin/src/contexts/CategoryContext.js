@@ -67,7 +67,7 @@ const useCtg = ({children}) => {
   const addCategory = async (data) => {
     try {
       ApiService.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('userToken')}`;
-      const resp = await ApiService.post('/public/category', {...data});
+      const resp = await ApiService.post('/private/category', {...data});
       getCategory()
     } catch (err) {
       console.log('add category error :', err);

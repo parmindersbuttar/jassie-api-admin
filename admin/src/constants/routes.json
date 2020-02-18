@@ -2,5 +2,6 @@
     "LOGIN": "/",
     "DASHBOARD": "/dashboard",
     "MEMBERS": "/members",
-    "CATEGORY": "/category"
+    "CATEGORY": "/category",
+    "VIDEO": "/video"
 }

@@ -11,6 +11,7 @@ import LoginPage from './containers/LoginPage';
 import DashboardPage from './containers/DashboardPage';
 import MembersPage from './containers/MembersPage';
 import CategoryPage from './containers/CategoryPage';
+import VideoPage from './containers/VideoPage';
 import history from './utils/history';
 import DefaultLayout from './containers/DefaultLayout';
 import 'typeface-roboto';
@@ -29,6 +30,7 @@ function App() {
           <PrivateRoute exact path={routes.DASHBOARD} component={DashboardPage}/>
           <PrivateRoute exact path={routes.MEMBERS} component={MembersPage}/>
           <PrivateRoute exact path={routes.CATEGORY} component={CategoryPage}/>
+          <PrivateRoute exact path={routes.VIDEO} component={VideoPage}/>
         </DefaultLayout>
       </Switch>
     </Router>

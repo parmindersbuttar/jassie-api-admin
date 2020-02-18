@@ -42,6 +42,7 @@ app.use(helmet({
 // parsing the request bodys
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, '../admin/build')));
 
 // secure your private routes with jwt authentication middleware
 app.all('/private/*', (req, res, next) => auth(req, res, next));
@@ -51,7 +52,7 @@ app.use('/public', mappedOpenRoutes);
 app.use('/private', mappedAuthRoutes);
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(`${__dirname}/../admin/build/index.html`));
+  res.sendFile(path.join(__dirname, '../admin/build/index.html'));
 });
 
 server.listen(config.port, () => {
