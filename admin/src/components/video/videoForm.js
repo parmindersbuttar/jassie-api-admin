@@ -40,20 +40,28 @@ export default function FormDialog(props) {
   }
 
   const onDrop = acceptedFiles => {
-    // Do something with the files
-    console.log("videodata :: ",videoData)
+      console.log("111", acceptedFiles[0])
+      let imgfile = {
+          "name":acceptedFiles[0].name,
+          "lastModified":acceptedFiles[0].lastModified,
+          "lastModifiedDate":acceptedFiles[0].lastModifiedDate,
+          "webkitRelativePath":acceptedFiles[0].webkitRelativePath,
+          "size":acceptedFiles[0].size,
+          "type":acceptedFiles[0].type,
+          "path":acceptedFiles[0].path
+
+
+      }
     setVideoData({
         ...videoData,
-        filename: acceptedFiles
+        filename: JSON.stringify(imgfile)
     })
-    console.log("accepted files", acceptedFiles)
   }
   const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
 
-  const addCtg = () => {
-      console.log("@@@ ",videoData)
-    // video.addVideo(videoData);
-    // props.handleClose(false)
+  const addVideo = () => {
+      video.addVideo(videoData);
+      props.handleClose(false)
   };
 
   return (
@@ -98,7 +106,7 @@ export default function FormDialog(props) {
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={addCtg} color="primary">
+          <Button onClick={addVideo} color="primary">
             Add
           </Button>
         </DialogActions>

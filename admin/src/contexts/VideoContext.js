@@ -64,10 +64,10 @@ const useVideo = ({children}) => {
     }
   };
   const addVideo = async (data) => {
-      console.log(data)
+      console.log(data.filename)
     try {
-    //   ApiService.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('userToken')}`;
-    //   const resp = await ApiService.post('/private/category', {...data});
+      ApiService.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('userToken')}`;
+      const resp = await ApiService.post('/private/video', {...data});
     getVideo()
     } catch (err) {
       console.log('add category error :', err);
