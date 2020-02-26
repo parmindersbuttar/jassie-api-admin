@@ -1,42 +1,70 @@
 const { validationResult } = require('express-validator');
 const fs = require('fs');
-const AWS = require('aws-sdk');
-const s3 = new AWS.S3({
-  accessKeyId: process.env.AWS_ACCESS_KEY,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-});
-
 const Video = require('../models/Video');
 const VideoCategory = require('../models/VideoCategory');
 
+const AWS = require('aws-sdk');
+const Busboy = require('busboy');
+const BUCKET_NAME = 'jessie-api';
+const IAM_USER_KEY = 'AKIAR5ADLPNGJLIE7CHE'
+const IAM_USER_SECRET = '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'
+
+
+let s3bucket = new AWS.S3({
+  accessKeyId: IAM_USER_KEY,
+  secretAccessKey: IAM_USER_SECRET,
+  Bucket: BUCKET_NAME,
+});
 // const Category = require('../models/Category');
 
 const VideoController = () => {
+ 
     const register = async (req, res) => {
+      // var busboy = new Busboy({ headers: req.headers });
+      
       const errors = validationResult(req);
+     
       if (!errors.isEmpty()) {
         return res.status(422).json({ errors: errors.array() });
       }
-      var { name, description, filename, category_ids } = req.body;
+      var { name, description, category_ids } = req.body;
       try {
-        filename = JSON.parse(filename)
-        console.log(filename)
-        // const video = await Video.create({
-        //   name: name,
-        //   description : description,
-        //   filename: filename,
-        // });
+        
+        var datetime = new Date();
+        var datetimeFolder = datetime.toISOString().slice(0,10);
+        var userId = '1'
+        const file = req.files.file;
+        const filenamedyn = datetimeFolder+'/'+userId+'/'+Date.now()+'_'+file.name;
+      
+        var params = { Bucket: BUCKET_NAME, Key: filenamedyn, Body: file.data};
+        s3bucket.upload(params, async function(err, data) {
+          if (err)
+            return res.status(200).json({ err });
+          else {
+            const video = await Video.create({
+              name: name,
+              description : description,
+              filename: data.Location,
+            });
 
-        // const categoryData = category_ids.map(id => {
-        //     return {
-        //         CategoryId: id,
-        //         VideoId: video.id
-        //     }
-        // }) 
+            var string = category_ids;
+            var category_ids_obj = JSON.parse("[" + string + "]");
+            const categoryData = category_ids_obj.map(id => {
+                return {
+                    CategoryId: id,
+                    VideoId: video.id
+                }
+            }) 
 
-        // const videoCategories = await VideoCategory.bulkCreate(categoryData);
+            const videoCategories = await VideoCategory.bulkCreate(categoryData);
 
-        // return res.status(200).json({ video, videoCategories });
+            return res.status(200).json({ video,videoCategories });
+          }
+          
+        });
+            
+       
+       
       } catch (err) {
         console.log(err);
         return res.status(500).json({ msg: 'Internal server error' });

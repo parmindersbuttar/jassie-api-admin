@@ -8,6 +8,9 @@ const http = require('http');
 const mapRoutes = require('express-routes-mapper');
 const cors = require('cors');
 const path = require('path');
+const busboy = require('connect-busboy');
+const busboyBodyParser = require('busboy-body-parser');
+
 
 /**
  * server configuration
@@ -23,6 +26,7 @@ const environment = process.env.NODE_ENV;
  * express application
  */
 const app = express();
+app.use(busboy());
 const server = http.Server(app);
 const mappedOpenRoutes = mapRoutes(config.publicRoutes, 'api/controllers/');
 const mappedAuthRoutes = mapRoutes(config.privateRoutes, 'api/controllers/');
@@ -42,6 +46,7 @@ app.use(helmet({
 // parsing the request bodys
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(busboyBodyParser());
 app.use(express.static(path.join(__dirname, '../admin/build')));
 
 // secure your private routes with jwt authentication middleware
