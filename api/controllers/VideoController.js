@@ -33,7 +33,7 @@ const VideoController = () => {
         var datetime = new Date();
         var datetimeFolder = datetime.toISOString().slice(0,10);
         var userId = '1'
-        const file = req.files.file;
+        const file = req.files.filename;
         const filenamedyn = datetimeFolder+'/'+userId+'/'+Date.now()+'_'+file.name;
       
         var params = { Bucket: BUCKET_NAME, Key: filenamedyn, Body: file.data};
