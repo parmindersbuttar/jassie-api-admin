@@ -1,7 +1,7 @@
 const development = {
   database: 'jessie_development',
   username: 'root',
-  password: 'root',
+  password: '',
   host: 'localhost',
   dialect: 'mysql' || 'postgres',
 };
