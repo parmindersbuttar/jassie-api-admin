@@ -1,6 +1,7 @@
 /**
  * third party libraries
  */
+require('dotenv').config()
 const bodyParser = require('body-parser');
 const express = require('express');
 const helmet = require('helmet');
@@ -70,3 +71,16 @@ server.listen(config.port, () => {
   }
   return DB;
 });
+
+server.on("error", e => {
+  console.log(e);
+});
+
+server.on("close", e => {
+  console.log("Server Stopped ...");
+});
+
+process.on("SIGINT", function() {
+  server.close();
+});
+
