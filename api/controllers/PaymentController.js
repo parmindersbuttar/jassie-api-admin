@@ -17,12 +17,16 @@ const PaymentController = () => {
       if (user.stripeCustomerId === null) {
         customer = await createStripeCustomer(body, user);
 
+        // if error in create customer on stripe
         if (!customer.id)
           return res.status(500).json({
             success: false,
-            msg:
+            error:
               "There is some error while payment. Please try after sometime or connect to customer support",
-            error: customer
+            err:
+              customer.raw && customer.raw.message
+                ? customer.raw.message
+                : customer
           });
       }
 
@@ -51,14 +55,19 @@ const PaymentController = () => {
           });
         }
         return res.status(500).json({
+          success: false,
           msg:
             "There is some error while Payment. Please try after sometime or connect to customer support ",
-          error: err
+          error: err.raw && err.raw.message ? err.raw.message : err
         });
       }
     } catch (err) {
       console.log(err);
-      return res.status(500).json({ msg: "Internal server error", error: err });
+      return res.status(500).json({
+        success: false,
+        msg: "Internal server error",
+        error: err.raw && err.raw.message ? err.raw.message : err
+      });
     }
   };
 
