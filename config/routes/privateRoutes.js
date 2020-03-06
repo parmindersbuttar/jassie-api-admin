@@ -6,7 +6,6 @@ const privateRoutes = {
   "PUT /category/:id": "CtgController.updateCategory",
   "DELETE /category/:id": "CtgController.deleteCategory",
 
-  "GET /video": "VideoController.getAll",
   "POST /video": "VideoController.register",
 
   "POST /video_category": "VideoCategoryController.register",

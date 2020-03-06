@@ -7,7 +7,9 @@ const publicRoutes = {
     middlewares: [userValidator]
   },
   "POST /login": "UserController.login",
-  "POST /validate": "UserController.validate"
+  "POST /validate": "UserController.validate",
+  
+  "GET /video": "VideoController.getAll"
 };
 
 module.exports = publicRoutes;
