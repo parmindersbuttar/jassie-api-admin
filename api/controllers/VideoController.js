@@ -2,24 +2,20 @@ const { validationResult } = require("express-validator");
 const fs = require("fs");
 const Video = require("../models/Video");
 const VideoCategory = require("../models/VideoCategory");
-
 const AWS = require("aws-sdk");
-const Busboy = require("busboy");
 const BUCKET_NAME = "jessie-api";
 const IAM_USER_KEY = "AKIAR5ADLPNGJLIE7CHE";
 const IAM_USER_SECRET = "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";
 
-let s3bucket = new AWS.S3({
+const s3bucket = new AWS.S3({
   accessKeyId: IAM_USER_KEY,
   secretAccessKey: IAM_USER_SECRET,
   Bucket: BUCKET_NAME
 });
-// const Category = require('../models/Category');
 
 const VideoController = () => {
   const register = async (req, res) => {
-    // var busboy = new Busboy({ headers: req.headers });
-
+    const { id } = req.token;
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -27,25 +23,43 @@ const VideoController = () => {
     }
     var { name, description, category_ids } = req.body;
     try {
-      var datetime = new Date();
-      var datetimeFolder = datetime.toISOString().slice(0, 10);
-      var userId = "1";
-      const file = req.files.filename;
-      const filenamedyn =
-        datetimeFolder + "/" + userId + "/" + Date.now() + "_" + file.name;
+      var userId = id;
+      const { file, thumbnail } = req.files;
 
-      var params = { Bucket: BUCKET_NAME, Key: filenamedyn, Body: file.data };
-      s3bucket.upload(params, async function(err, data) {
-        if (err) return res.status(200).json({ err });
-        else {
+      if (!file || !thumbnail) {
+        return res.status(400).json({ msg: "Bad Request" });
+      }
+      await uploadFileToS3(file, userId, async (err, videoRes) => {
+        let videoResUrl = "";
+        let imageResUrl = "";
+
+        if (err) {
+          return res
+            .status(500)
+            .json({ msg: "Internal server error", error: err });
+        }
+
+        videoResUrl = videoRes.Location;
+        await uploadFileToS3(thumbnail, userId, async (error, imageRes) => {
+          if (error) {
+            return res
+              .status(500)
+              .json({ msg: "Internal server error", error: error });
+          }
+
+          imageResUrl = imageRes.Location;
+
           const video = await Video.create({
             name: name,
             description: description,
-            filename: data.Location
+            filename: videoResUrl,
+            thumbnailUrl: imageResUrl
           });
 
-          var string = category_ids;
-          var category_ids_obj = JSON.parse("[" + string + "]");
+          var categories = category_ids;
+          var videoCategories = [];
+          var category_ids_obj = JSON.parse("[" + categories + "]");
+
           const categoryData = category_ids_obj.map(id => {
             return {
               CategoryId: id,
@@ -53,15 +67,59 @@ const VideoController = () => {
             };
           });
 
-          const videoCategories = await VideoCategory.bulkCreate(categoryData);
+          if (categoryData.length)
+            videoCategories = await VideoCategory.bulkCreate(categoryData);
 
-          return res.status(200).json({ video, videoCategories });
-        }
+          return res
+            .status(200)
+            .json({ video, videoCategories: videoCategories });
+        });
       });
+
+      // const uploadedThumbnail = uploadFileToS3(thumbnail, userId);
+      // s3bucket.upload(params, async function(err, data) {
+      //   if (err) return res.status(500).json({ err });
+      //   else {
+      //     const video = await Video.create({
+      //       name: name,
+      //       description: description,
+      //       filename: data.Location
+      //     });
+
+      //     var string = category_ids;
+      //     var category_ids_obj = JSON.parse("[" + string + "]");
+      //     const categoryData = category_ids_obj.map(id => {
+      //       return {
+      //         CategoryId: id,
+      //         VideoId: video.id
+      //       };
+      //     });
+
+      //     const videoCategories = await VideoCategory.bulkCreate(categoryData);
+
+      //     return res.status(200).json({ video, videoCategories });
+      //   }
+      // });
     } catch (err) {
       console.log(err);
-      return res.status(500).json({ msg: "Internal server error" });
+      return res.status(500).json({ msg: "Internal server error", error: err });
     }
+  };
+
+  const uploadFileToS3 = async (file, userId, cb) => {
+    var datetime = new Date();
+    var datetimeFolder = datetime.toISOString().slice(0, 10);
+    const filenamedyn = `${datetimeFolder}/${userId}/${Date.now()}_${
+      file.name
+    }`;
+
+    const params = {
+      Bucket: BUCKET_NAME,
+      Key: filenamedyn,
+      Body: file.data
+    };
+
+    return await s3bucket.upload(params, cb);
   };
 
   const getAll = async (req, res) => {

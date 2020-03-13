@@ -1,24 +1,30 @@
-const Sequelize = require('sequelize');
-const sequelize = require('../../config/database');
+const Sequelize = require("sequelize");
+const sequelize = require("../../config/database");
 
-const tableName = 'video';
+const tableName = "video";
 
-const Video = sequelize.define('Video', {
+const Video = sequelize.define(
+  "Video",
+  {
     name: {
       type: Sequelize.STRING
     },
     description: {
       type: Sequelize.TEXT
     },
-    filename:{
-        type: Sequelize.STRING
+    filename: {
+      type: Sequelize.STRING
+    },
+    thumbnailUrl: {
+      type: Sequelize.STRING
     }
-  }, { tableName });
+  },
+  { tableName }
+);
 
-  Video.prototype.toJSON = function () {
-    const values = Object.assign({}, this.get());  
-    return values;
-  };
+Video.prototype.toJSON = function() {
+  const values = Object.assign({}, this.get());
+  return values;
+};
 
-  module.exports = Video;
-  
+module.exports = Video;

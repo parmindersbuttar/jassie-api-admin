@@ -1,25 +1,25 @@
-import axios from 'axios';
+import axios from "axios";
 
 const instance = axios.create({
-  // baseURL: 'http://localhost:5000',
- baseURL: '',
+  // baseURL: "http://localhost:5000",
+  baseURL: "",
   timeout: 20000,
   headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json'
+    Accept: "application/json",
+    "Content-Type": "application/json"
   }
 });
 
 instance.interceptors.response.use(
   response => {
-  return response;
+    return response;
   },
   error => {
-  // Do something with response error
-  if (error.response.status < 500) {
-   return error.response
-  }
-  return Promise.reject(error);
+    // Do something with response error
+    if (error.response.status < 500) {
+      return error.response;
+    }
+    return Promise.reject(error);
   }
 );
 

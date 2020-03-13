@@ -1,19 +1,19 @@
 import React, { useReducer, createContext } from "react";
 // import routes from '../constants/routes.json';
-import ApiService from '../utils/ApiService';
+import ApiService from "../utils/ApiService";
 // import history from '../utils/history';
 import {
   GET_VIDEO,
   GET_VIDEO_FAILED,
   GET_VIDEO_SUCCESS
-} from '../constants/types';
+} from "../constants/types";
 
 // Define the initial state of our app
 const initialState = {
-    data: null,
-    loggedIn: false,
-    loading: false,
-    error: null
+  data: null,
+  loggedIn: false,
+  loading: false,
+  error: null
 };
 
 export const VideoContext = createContext(initialState);
@@ -32,57 +32,63 @@ const reducer = (state, action) => {
         ...state,
         loading: false,
         error: action.payload
-      }
+      };
     case GET_VIDEO_SUCCESS:
       return {
         ...state,
         loading: false,
         loggedIn: true,
         data: action.payload
-      }     
+      };
     default:
       return {
-          ...state
-      }
+        ...state
+      };
   }
 };
 
 // Define your custom hook that contains your state, dispatcher and actions
-const useVideo = ({children}) => {
+const useVideo = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const getVideo = async (data) => {
+  const getVideo = async data => {
     try {
-        ApiService.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('userToken')}`;
-        const resp = await ApiService.get('/private/video');
-        dispatch({
-          type: GET_VIDEO_SUCCESS,
-          payload: resp.data.video
-        });
-      
+      const resp = await ApiService.get("/public/video");
+      dispatch({
+        type: GET_VIDEO_SUCCESS,
+        payload: resp.data.video
+      });
     } catch (err) {
-      console.log('get users error :', err);
+      console.log("get users error :", err);
     }
   };
-  const addVideo = async (data) => {
-      console.log(data.filename)
+  const addVideo = async data => {
     try {
-      ApiService.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('userToken')}`;
-      const resp = await ApiService.post('/private/video', {...data});
-    getVideo()
+      ApiService.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${localStorage.getItem("userToken")}`;
+      ApiService.defaults.headers.common["Content-Type"] =
+        "multipart/form-data";
+      ApiService.defaults.headers.common["Accept"] = "application/json";
+      ApiService.defaults.headers.common["type"] = "formData";
+
+      const resp = await ApiService.post("/private/video", data);
+      getVideo();
     } catch (err) {
-      console.log('add category error :', err);
+      console.log("add category error :", err);
     }
   };
   const validateToken = () => {
-    dispatch( {
-      type: 'VALIDATE'
-    })
-  }
+    dispatch({
+      type: "VALIDATE"
+    });
+  };
   return (
-      <VideoContext.Provider value={{...state, getVideo, addVideo, validateToken}}>
-          {children}
-      </VideoContext.Provider>
-  )
+    <VideoContext.Provider
+      value={{ ...state, getVideo, addVideo, validateToken }}
+    >
+      {children}
+    </VideoContext.Provider>
+  );
 };
 
 // Share your custom hook
