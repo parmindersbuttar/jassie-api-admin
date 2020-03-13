@@ -1,19 +1,48 @@
 import React, { useState, useContext, useEffect, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-
-import { VideoContext } from "../../contexts/VideoContext";
-
 import { makeStyles } from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogTitle from "@material-ui/core/DialogTitle";
+import {
+  Button,
+  TextField,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle
+} from "@material-ui/core";
+import CloudUploadOutlined from "@material-ui/icons/CloudUploadOutlined";
+import { VideoContext } from "../../contexts/VideoContext";
 
 const useStyles = makeStyles({
   dialog: {
     minWidth: 600
+  },
+  uploadInput: {
+    padding: 10,
+    border: "1px solid #ccc",
+    boxShadow: "2px 2px 5px 2px hsla(0, 0%, 0%, 0.15)",
+    outline: "none"
+  },
+  dropInside: {
+    height: 200,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center"
+  },
+  dragDrop: {
+    height: 200,
+    textAlign: "center",
+    border: "2px dashed #837979"
+  },
+  iconUpload: {
+    marginLeft: "auto",
+    marginRight: "auto"
+  },
+  uploadTextField: {
+    padding: "20px 0px 10px"
+  },
+  uploadText: {
+    fontSize: "1rem",
+    color: "rgba(0, 0, 0, 0.54)"
   }
 });
 
@@ -75,12 +104,35 @@ export default function FormDialog(props) {
     });
 
     return (
-      <div {...getRootProps()}>
+      <div {...getRootProps()} className={classes.uploadInput}>
         <input {...getInputProps()} accept="image/*" />
         {isDragActive ? (
-          <p>Drop the thumbnail file here ...</p>
+          <div className={classes.dragDrop}>
+            <div className={classes.dropInside}>
+              <span>Drop files here</span>
+              <span className={classes.iconUpload}>
+                <CloudUploadOutlined />
+              </span>
+            </div>
+          </div>
         ) : (
-          <p>Drag 'n' drop thumbnail file here, or click to select thumbnail</p>
+          <div className={classes.dragDrop}>
+            {videoData.imageUrl != "" ? (
+              <div className={classes.dropInside}>
+                <span className={classes.iconUpload}>
+                  <img height="170" src={videoData.imageUrl} />{" "}
+                </span>
+              </div>
+            ) : (
+              <div className={classes.dropInside}>
+                <span>Drag 'n' drop a file here, or click to select</span>
+                <span className={classes.iconUpload}>
+                  <CloudUploadOutlined />
+                </span>
+              </div>
+            )}
+            :
+          </div>
         )}
       </div>
     );
@@ -92,12 +144,41 @@ export default function FormDialog(props) {
     });
 
     return (
-      <div {...getRootProps()}>
+      <div {...getRootProps()} className={classes.uploadInput}>
         <input {...getInputProps()} accept="video/*" />
         {isDragActive ? (
-          <p>Drop the Video files here ...</p>
+          <div className={classes.dragDrop}>
+            <div className={classes.dropInside}>
+              <span>Drop files here</span>
+              <span className={classes.iconUpload}>
+                <CloudUploadOutlined />
+              </span>
+            </div>
+          </div>
         ) : (
-          <p>Drag 'n' drop Video file here, or click to select Video</p>
+          <div className={classes.dragDrop}>
+            {videoData.videoUrl != "" ? (
+              <div className={classes.dropInside}>
+                <span className={classes.iconUpload}>
+                  <video
+                    height="170"
+                    src={videoData.videoUrl}
+                    style={{ outline: "none" }}
+                    controls
+                    muted
+                  ></video>
+                </span>
+              </div>
+            ) : (
+              <div className={classes.dropInside}>
+                <span>Drag 'n' drop a file here, or click to select</span>
+                <span className={classes.iconUpload}>
+                  <CloudUploadOutlined />
+                </span>
+              </div>
+            )}
+            :
+          </div>
         )}
       </div>
     );
@@ -152,16 +233,15 @@ export default function FormDialog(props) {
             rows="2"
             fullWidth
           />
-
+          <div className={classes.uploadTextField}>
+            <label className={classes.uploadText}>Select Thumbnail File</label>
+          </div>
           <ImageDropzone />
-          <img width="auto" height="150" src={videoData.imageUrl} />
+
+          <div className={classes.uploadTextField}>
+            <label className={classes.uploadText}>Select Video File</label>
+          </div>
           <VideoDropzone />
-          <video
-            width="auto"
-            height="150"
-            src={videoData.videoUrl}
-            controls
-          ></video>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
