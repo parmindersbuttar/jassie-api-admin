@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useCallback } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { makeStyles } from "@material-ui/core/styles";
 import {
@@ -53,11 +53,11 @@ export default function FormDialog(props) {
   const [videoData, setVideoData] = useState({
     name: "",
     description: "",
-    file: "",
-    image: "",
+    filename: "",
+    thumbnailUrl: "",
     category_ids: [],
-    imageUrl: "",
-    videoUrl: ""
+    imageURI: "",
+    videoURI: ""
   });
 
   const handleChange = e => {
@@ -74,22 +74,22 @@ export default function FormDialog(props) {
     if (type === "video") {
       setVideoData({
         ...videoData,
-        file: selectedFile,
-        videoUrl: blobURL
+        filename: selectedFile,
+        videoURI: blobURL
       });
     } else {
       setVideoData({
         ...videoData,
-        image: selectedFile,
-        imageUrl: blobURL
+        thumbnailUrl: selectedFile,
+        imageURI: blobURL
       });
     }
   };
 
   const addVideo = () => {
     const formData = new FormData();
-    formData.append("file", videoData.file);
-    formData.append("thumbnail", videoData.image);
+    formData.append("filename", videoData.filename);
+    formData.append("thumbnailUrl", videoData.thumbnailUrl);
     formData.append("name", videoData.name);
     formData.append("description", videoData.description);
     formData.append("category_ids", videoData.category_ids);
@@ -117,10 +117,10 @@ export default function FormDialog(props) {
           </div>
         ) : (
           <div className={classes.dragDrop}>
-            {videoData.imageUrl != "" ? (
+            {videoData.imageURI != "" ? (
               <div className={classes.dropInside}>
                 <span className={classes.iconUpload}>
-                  <img height="170" src={videoData.imageUrl} />{" "}
+                  <img height="170" src={videoData.imageURI} />{" "}
                 </span>
               </div>
             ) : (
@@ -157,12 +157,12 @@ export default function FormDialog(props) {
           </div>
         ) : (
           <div className={classes.dragDrop}>
-            {videoData.videoUrl != "" ? (
+            {videoData.videoURI != "" ? (
               <div className={classes.dropInside}>
                 <span className={classes.iconUpload}>
                   <video
                     height="170"
-                    src={videoData.videoUrl}
+                    src={videoData.videoURI}
                     style={{ outline: "none" }}
                     controls
                     muted
@@ -190,11 +190,11 @@ export default function FormDialog(props) {
         setVideoData({
           name: "",
           description: "",
-          file: "",
-          image: "",
+          filename: "",
+          thumbnailUrl: "",
           category_ids: [],
-          imageUrl: "",
-          videoUrl: ""
+          imageURI: "",
+          videoURI: ""
         });
       }
     };

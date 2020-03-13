@@ -24,12 +24,13 @@ const VideoController = () => {
     var { name, description, category_ids } = req.body;
     try {
       var userId = id;
-      const { file, thumbnail } = req.files;
+      const { filename, thumbnailUrl } = req.files;
 
-      if (!file || !thumbnail) {
+      if (!filename || !thumbnailUrl || !name || name === "") {
         return res.status(400).json({ msg: "Bad Request" });
       }
-      await uploadFileToS3(file, userId, async (err, videoRes) => {
+
+      await uploadFileToS3(filename, userId, async (err, videoRes) => {
         let videoResUrl = "";
         let imageResUrl = "";
 
@@ -40,7 +41,7 @@ const VideoController = () => {
         }
 
         videoResUrl = videoRes.Location;
-        await uploadFileToS3(thumbnail, userId, async (error, imageRes) => {
+        await uploadFileToS3(thumbnailUrl, userId, async (error, imageRes) => {
           if (error) {
             return res
               .status(500)
@@ -76,30 +77,6 @@ const VideoController = () => {
         });
       });
 
-      // const uploadedThumbnail = uploadFileToS3(thumbnail, userId);
-      // s3bucket.upload(params, async function(err, data) {
-      //   if (err) return res.status(500).json({ err });
-      //   else {
-      //     const video = await Video.create({
-      //       name: name,
-      //       description: description,
-      //       filename: data.Location
-      //     });
-
-      //     var string = category_ids;
-      //     var category_ids_obj = JSON.parse("[" + string + "]");
-      //     const categoryData = category_ids_obj.map(id => {
-      //       return {
-      //         CategoryId: id,
-      //         VideoId: video.id
-      //       };
-      //     });
-
-      //     const videoCategories = await VideoCategory.bulkCreate(categoryData);
-
-      //     return res.status(200).json({ video, videoCategories });
-      //   }
-      // });
     } catch (err) {
       console.log(err);
       return res.status(500).json({ msg: "Internal server error", error: err });
