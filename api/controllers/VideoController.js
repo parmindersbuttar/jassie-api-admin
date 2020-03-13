@@ -17,7 +17,7 @@ const VideoController = () => {
   const register = async (req, res) => {
     const { id } = req.token;
     const errors = validationResult(req);
-
+ 
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }
