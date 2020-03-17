@@ -87,7 +87,7 @@ export default function FormDialog(props) {
             name="description"
             label="Category Description"
             multiline
-            rows="4"
+            rows="2"
             fullWidth
           />
         </DialogContent>

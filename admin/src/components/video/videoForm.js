@@ -7,12 +7,20 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle
+  DialogTitle,
+  FormControl,
+  Select,
+  InputLabel,
+  MenuItem,
+  Checkbox,
+  Input,
+  ListItemText
 } from "@material-ui/core";
 import CloudUploadOutlined from "@material-ui/icons/CloudUploadOutlined";
 import { VideoContext } from "../../contexts/VideoContext";
+import { CategoryContext } from "../../contexts/CategoryContext";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   dialog: {
     minWidth: 600
   },
@@ -43,13 +51,19 @@ const useStyles = makeStyles({
   uploadText: {
     fontSize: "1rem",
     color: "rgba(0, 0, 0, 0.54)"
+  },
+  formControl: {
+    width: "100%"
   }
-});
+}));
 
 export default function FormDialog(props) {
-  const video = useContext(VideoContext);
   const classes = useStyles();
+
+  const video = useContext(VideoContext);
+  const category = useContext(CategoryContext);
   const { handleClose, open } = props;
+  const [categoriesSelected, setCategoriesSelected] = useState([]);
   const [videoData, setVideoData] = useState({
     name: "",
     description: "",
@@ -60,12 +74,27 @@ export default function FormDialog(props) {
     videoURI: ""
   });
 
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250
+      }
+    }
+  };
+
   const handleChange = e => {
     const { value, name } = e.target;
     setVideoData({
       ...videoData,
       [name]: value
     });
+  };
+
+  const handleChangeMulti = event => {
+    setCategoriesSelected(event.target.value);
   };
 
   const onDrop = async (files, type) => {
@@ -92,8 +121,7 @@ export default function FormDialog(props) {
     formData.append("thumbnailUrl", videoData.thumbnailUrl);
     formData.append("name", videoData.name);
     formData.append("description", videoData.description);
-    formData.append("category_ids", videoData.category_ids);
-
+    formData.append("category_ids", categoriesSelected);
     video.addVideo(formData);
     props.handleClose(false);
   };
@@ -184,6 +212,19 @@ export default function FormDialog(props) {
     );
   };
 
+  const fetchSelectedCategoryNames = selected => {
+    let selectedCatName = [];
+    const selectedCatNameArray = [];
+
+    selected.forEach(catId => {
+      selectedCatName = category.data.filter(cat => cat.id === catId);
+      if (selectedCatName.length)
+        selectedCatNameArray.push(selectedCatName[0].name);
+    });
+
+    return selectedCatNameArray.join(", ");
+  };
+
   useEffect(() => {
     return () => {
       if (props.open) {
@@ -199,6 +240,10 @@ export default function FormDialog(props) {
       }
     };
   }, [props.open]);
+
+  useEffect(() => {
+    category.getCategory();
+  }, []);
 
   return (
     <div>
@@ -233,6 +278,33 @@ export default function FormDialog(props) {
             rows="2"
             fullWidth
           />
+
+          <FormControl className={classes.formControl}>
+            <InputLabel id="category-checkbox-label">Category</InputLabel>
+            <Select
+              labelId="category-checkbox-label"
+              id="category-checkbox"
+              multiple
+              value={categoriesSelected}
+              onChange={handleChangeMulti}
+              input={<Input />}
+              renderValue={selected => fetchSelectedCategoryNames(selected)}
+              MenuProps={MenuProps}
+            >
+              {category &&
+                category.data &&
+                category.data.map(item => (
+                  <MenuItem key={item.id} value={item.id}>
+                    <Checkbox
+                      color="primary"
+                      checked={categoriesSelected.indexOf(item.id) > -1}
+                    />
+                    <ListItemText primary={item.name} />
+                  </MenuItem>
+                ))}
+            </Select>
+          </FormControl>
+
           <div className={classes.uploadTextField}>
             <label className={classes.uploadText}>Select Thumbnail File</label>
           </div>

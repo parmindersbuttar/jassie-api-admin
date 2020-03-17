@@ -63,7 +63,7 @@ const useCtg = ({children}) => {
       console.log('get category error :', err);
     }
   };
-
+  
   const addCategory = async (data) => {
     try {
       ApiService.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('userToken')}`;

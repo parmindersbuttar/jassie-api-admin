@@ -1,14 +1,13 @@
-import React from 'react';
-import CategoryProvider from '../contexts/CategoryContext';
-import Category from '../components/category';
-// import Button from '@material-ui/core/Button';
-// import { Link } from 'react-router-dom';
+import React from "react";
+import CategoryProvider from "../contexts/CategoryContext";
+import Category from "../components/category";
+
 const CategoryPage = () => {
   return (
     <CategoryProvider>
-        <Category/>
+      <Category />
     </CategoryProvider>
-  )
-}
+  );
+};
 
 export default CategoryPage;

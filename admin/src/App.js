@@ -18,7 +18,6 @@ import 'typeface-roboto';
 
 function App() {
   const loginStore = useContext(LoginContext)
-  console.log(loginStore)
   useEffect(() => {
     loginStore.validateToken()
   },[])
